@@ -8,21 +8,21 @@ const express = require("express");
 const http = require('http');
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
+const MySQLEvents = require('mysql-events');
 
 const socketEvents = require('./utils/socket'); 
 const routes = require('./utils/routes'); 
 const config = require('./utils/config'); 
-
-
 class Server{
 
     constructor(){
         this.port =  process.env.PORT || 3000;
-        this.host = `localhost`;
+        this.host = `0.0.0.0`;
         
         this.app = express();
         this.http = http.Server(this.app);
         this.socket = socketio(this.http);
+
     }
 
     appConfig(){        
@@ -40,7 +40,6 @@ class Server{
     /* Including app Routes ends*/  
 
     appExecute(){
-
         this.appConfig();
         this.includeRoutes();
 

@@ -61,6 +61,6 @@ class AppService{
         const messageThread = document.querySelector('.message-thread');
         setTimeout(() => {
             messageThread.scrollTop = messageThread.scrollHeight + 500;
-        }, 10);        
+        }, 2);        
     }
 }

@@ -86,7 +86,25 @@ class Helper{
 			return null;
 		}
 	}
-
+	getChatListPHP(userId){
+		try {
+			return Promise.all([
+				this.db.query(`SELECT id,username,online,socketid FROM user WHERE id = ?`, [userId]),
+				this.db.query(`SELECT id,username,online,socketid FROM user WHERE online = ? and id != ?`, ['Y',userId])
+			]).then( (response) => {
+				return {
+					userinfo : response[0].length > 0 ? response[0][0] : response[0],
+					chatlist : response[1]
+				};
+			}).catch( (error) => {
+				console.warn(error);
+				return (null);
+			});
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
 	async insertMessages(params){
 		try {
 			return await this.db.query(

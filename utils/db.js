@@ -13,12 +13,12 @@ const mysql = require('mysql');
 class Db {
 	constructor(config) {
 		this.connection = mysql.createPool({
-			connectionLimit: 100,
-			host: '127.0.0.1',
+			host: 'localhost',
 			user: 'root',
-			password: 'root',
+			password: 'digital',
 			database: 'chat',
-			debug: false
+			socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock',
+			debug: true
 		});
 	}
 	query(sql, args) {

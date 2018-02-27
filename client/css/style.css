@@ -121,3 +121,20 @@ body{
 .chat-list li{
 	cursor: pointer;
 }
+.chat-exit{
+	text-align: center;
+	margin: auto;
+
+}
+.chat-exit span{
+	border: 1px solid black;
+	padding: 5px 20px;
+	border-radius: 10px;
+}
+.chat-exit span,.chat-exit i{
+
+	cursor: pointer;
+}
+.message-thread li:last-child{
+	margin-bottom: 20px;
+}

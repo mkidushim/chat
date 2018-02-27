@@ -28,6 +28,32 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
     .then((response) => {
         $scope.data.username = response.username;
         appService.socketEmit(`chat-list`, UserId);
+        appService.socketOn('test-php', (response) => {
+            $scope.$apply( () =>{
+                if (!response.error) {
+                    console.log(response);
+                    if (response.connected == true) {
+                        /* 
+                        * Removing duplicate user from chat list array
+                        */
+                        /* 
+                        * Adding new online user into chat list array
+                        */
+                        console.log(response);
+                        $scope.data.chatlist.push(response.user);
+                    } else {
+                        /* 
+                        * Removing a user from chat list, if user goes offline
+                        */
+                        $scope.data.chatlist = $scope.data.chatlist.filter(function (obj) {
+                            return obj.id !== response.user.id;
+                        });
+                    }
+                } else {
+                    alert(`Faild to load Chat list`);
+                }
+            });
+        });
         appService.socketOn('chat-list-response', (response) => {
             $scope.$apply( () =>{
                 if (!response.error) {
@@ -44,6 +70,16 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
                         * Adding new online user into chat list array
                         */
                         $scope.data.chatlist.push(response.chatList);
+                    }else if (response.phpUser) {
+                        /* 
+                        * Removing duplicate user from chat list array
+                        */
+                        console.log(response);
+                        /* 
+                        * Adding new online user into chat list array
+                        */
+                        $scope.data.chatlist.push(response.chatList);
+                        console.log($scope.data.chatlist);
                     } else if (response.userDisconnected) {
                         /* 
                         * Removing a user from chat list, if user goes offline
@@ -81,7 +117,14 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
             $location.path(`/`);
         });
     });
-
+    //new function exit chatroom
+    $scope.exitChat = () => {
+        /*
+        * Highlighting the selected user from the chat list
+        */
+        $scope.data.selectedFriendName = null;
+        $scope.data.selectedFriendId = null;
+    }
 
     $scope.selectFriendToChat = (friendId) => {
         /*
@@ -99,6 +142,7 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
             $scope.$apply(() => {
                 $scope.data.messages = response.messages;
             });
+            appService.scrollToBottom();
         }).catch( (error) => {
             console.log(error);
             alert('Unexpected Error, Contact your Site Admin.');
@@ -136,9 +180,11 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
                 };
                 $scope.data.messages.push(messagePacket);
                 appService.socketEmit(`add-message`, messagePacket);
-
-                document.querySelector('#message').value = '';
                 appService.scrollToBottom();
+                console.log('clear message');
+                setTimeout(function() {
+                    document.querySelector('#message').value = '';
+                }, 200);
             }else {
                 alert('Unexpected Error Occured,Please contact Admin');
             }

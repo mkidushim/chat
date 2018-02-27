@@ -5,7 +5,9 @@
 'use strict';
 
 const path = require('path');
+var MySQLEvents = require('mysql-events');
 const helper = require('./helper');
+
 
 class Socket{
 
@@ -16,9 +18,18 @@ class Socket{
     socketEvents(){
 
         this.io.on('connection', (socket) => {
-
+            socket.on('chat-list-php', async (u) => {
+                let chatListResponse = {};
+                const chat_connect = u.connected;
+                const result = await helper.getChatListPHP(u.userId);
+                socket.broadcast.emit('test-php', {
+                    error: result !== null ? false : true,
+                    connected: chat_connect,
+                    user: result.userinfo
+                });
+            });
             /**
-            * get the user's Chat list
+            * get the user's Chat chlist
             */
             socket.on('chat-list', async (userId) => {
 
@@ -71,6 +82,11 @@ class Socket{
                     });
                     this.io.to(toSocketId).emit(`add-message-response`, data); 
                 }               
+            });
+            socket.on('add-message-php', async (data) => {
+                console.log(data);
+                let toSocketId = data.toSocketId;
+                this.io.to(toSocketId).emit(`add-message-response`, data);  
             });
 
 
