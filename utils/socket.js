@@ -48,7 +48,6 @@ class Socket{
                         singleUser: false,
                         chatList: result.chatlist
                     });
-
                     socket.broadcast.emit('chat-list-response', {
                         error: result !== null ? false : true,
                         singleUser: true,
@@ -78,14 +77,15 @@ class Socket{
                     const sqlResult = await helper.insertMessages({
                         fromUserId: data.fromUserId,
                         toUserId: data.toUserId,
-                        message: data.message
+                        apptId: data.apptId,
+                        message: data.message,
+                        sender:'doctor'
                     });
                     this.io.to(toSocketId).emit(`add-message-response`, data); 
                 }               
             });
             socket.on('add-message-php', async (data) => {
-                console.log(data);
-                let toSocketId = data.toSocketId;
+                let toSocketId = data.socket;
                 this.io.to(toSocketId).emit(`add-message-response`, data);  
             });
 

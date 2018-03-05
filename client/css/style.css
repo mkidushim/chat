@@ -69,7 +69,7 @@ body{
 }
 
 .message-thread li {
-	max-width: 300px;
+	width: 90%;
 	border-color: solid 0.5px rgba(0, 0, 0, 0.32);
 	clear: both;
 	text-decoration: none;
@@ -80,7 +80,6 @@ body{
 	padding: 25px 34px;
 	min-width: 160px;
 	min-height: 10px;
-	max-width: 350px;
 	border-radius: 5px;
 	border:solid 1px #0000001f;
 	background-color: rgba(255, 255, 255, 0.80);
@@ -137,4 +136,7 @@ body{
 }
 .message-thread li:last-child{
 	margin-bottom: 20px;
+}
+li.patient{
+	background-color: pink!important;
 }

@@ -6,6 +6,8 @@
 
 const express = require("express");
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
 const MySQLEvents = require('mysql-events');
@@ -13,15 +15,19 @@ const MySQLEvents = require('mysql-events');
 const socketEvents = require('./utils/socket'); 
 const routes = require('./utils/routes'); 
 const config = require('./utils/config'); 
+const options = {
+    key: fs.readFileSync('/etc/apache2/ssl/fusionofideas.key'),
+    cert: fs.readFileSync('/etc/apache2/ssl/fusionofideas.crt')
+};
 class Server{
 
     constructor(){
-        this.port =  process.env.PORT || 3000;
-        this.host = `0.0.0.0`;
+        this.port =  process.env.PORT || 4000;
+        this.host = `mike.fusionofideas.com`;
         
         this.app = express();
-        this.http = http.Server(this.app);
-        this.socket = socketio(this.http);
+        this.https = https.Server(options,this.app);
+        this.socket = socketio(this.https);
 
     }
 
@@ -43,8 +49,8 @@ class Server{
         this.appConfig();
         this.includeRoutes();
 
-        this.http.listen(this.port, this.host, () => {
-            console.log(`Listening on http://${this.host}:${this.port}`);
+        this.https.listen(this.port, this.host, () => {
+            console.log(`Listening on https://${this.host}:${this.port}`);
         });
     }
 

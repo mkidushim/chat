@@ -7,6 +7,7 @@
 
 const helper = require('./helper');
 const path = require('path');
+const crypto = require('crypto');
 class Routes{
 
 	constructor(app){
@@ -69,6 +70,7 @@ class Routes{
 
 		this.app.post('/login',async (request,response) =>{
 			const loginResponse = {}
+			request.body.password = crypto.createHash('md5').update(request.body.password).digest('hex');
 			const data = {
 				username : (request.body.username).toLowerCase(),
 				password : request.body.password
@@ -85,7 +87,7 @@ class Routes{
 				const result = await helper.loginUser(data);
 				if (result === null || result.length === 0) {
 					loginResponse.error = true;
-					loginResponse.message = `Invalid username and password combination.`;
+					loginResponse.message = `Username or password incorrect.`;
 					response.status(401).json(loginResponse);
 				} else {
 					loginResponse.error = false;
@@ -105,6 +107,7 @@ class Routes{
 	            response.status(412).json(sessionCheckResponse);
 			}else{
 				const username = await helper.userSessionCheck(userId);
+				console.log(username);
 				if (username === null || username === '') {
 					sessionCheckResponse.error = true;
 					sessionCheckResponse.message = `User is not logged in.`;
@@ -121,13 +124,15 @@ class Routes{
 		this.app.post('/getMessages',async (request,response) => {
 			const userId = request.body.userId;
 			const toUserId = request.body.toUserId;
+			const apptId = request.body.apptId;
+			console.log(apptId);
 			const messages = {}			
 			if (userId === '') {
 				messages.error = true;
 	            messages.message = `userId cant be empty.`;
 	            response.status(200).json(messages);
 			}else{
-				const result = await helper.getMessages( userId, toUserId);
+				const result = await helper.getMessages( userId, toUserId, apptId);
 				if (result ===  null) {
 					messages.error = true;
 					messages.message = `Internal Server error.`;

@@ -5,7 +5,7 @@ class Config{
 		app.set('view engine', 'html');
 
 		// Telling express where it can find the templates
-		app.set('views', (__dirname + '/../views'));
+		app.set('views', ('/client/views/'));
 
 		//Files 
 		app.use(require('express').static(require('path').join('client')));

@@ -15,9 +15,9 @@ class Db {
 		this.connection = mysql.createPool({
 			host: 'localhost',
 			user: 'root',
-			password: 'digital',
-			database: 'chat',
-			socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock',
+			password: 'Monster.',
+			database: 'mtm',
+			// socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock',
 			debug: true
 		});
 	}

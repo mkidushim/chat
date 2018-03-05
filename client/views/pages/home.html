@@ -22,7 +22,7 @@
                     <div class="message-list">
                         <ul class="message-thread">
                             <li ng-repeat="messagePacket in data.messages"
-                                ng-class="{ 'align-right' : alignMessage(messagePacket.fromUserId) } ">
+                                ng-class="{ 'patient' : alignMessage(messagePacket.sender) } ">
                                 {{messagePacket.message}}
                             </li>
                         </ul>
@@ -49,9 +49,9 @@
                         <ul class="list-group" ng-if="data.chatlist.length > 0">
                             <li class="list-group-item"
                                 ng-repeat="friend in data.chatlist"
-                                ng-click="selectFriendToChat(friend.id)"
-                                ng-class="{'active':friend.id == data.selectedFriendId}"
-                            >{{friend.username}}</li>
+                                ng-click="selectFriendToChat(friend)"
+                                ng-class="{'active':friend.id == data.selectedFriendId && friend.appt_id == data.selectedApptId}"
+                            >{{friend.date}}-{{friend.last_name}}, {{friend.first_name}}</li>
                         </ul>
                         <div class="alert alert-info" ng-if="data.chatlist.length === 0">
                             <strong>No one is online to chat, ask someone to Login.</strong>
