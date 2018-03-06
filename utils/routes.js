@@ -92,6 +92,7 @@ class Routes{
 				} else {
 					loginResponse.error = false;
 					loginResponse.userId = result[0].id;
+					loginResponse.hid = result[0].hid;
 					loginResponse.message = `User logged in.`;
 					response.status(200).json(loginResponse);
 				}

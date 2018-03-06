@@ -13,7 +13,7 @@ class Helper{
 	}
 
 	async userNameCheck (username){
-		return await this.db.query(`SELECT count(email) as count FROM doctor WHERE LOWER(email) = ?`, `${username}`);
+		return await this.db.query(`SELECT count(id) as count FROM user WHERE LOWER(username) = ?`, `${username}`);
 	}
 
 	// async registerUser(params){
@@ -27,7 +27,7 @@ class Helper{
 
 	async loginUser(params){
 		try {
-			return await this.db.query(`SELECT id FROM doctor WHERE LOWER(email) = ? AND password = ?`, [params.username,params.password]);
+			return await this.db.query(`SELECT id,hospital_id as hid FROM user WHERE LOWER(username) = ? AND password = ?`, [params.username,params.password]);
 		} catch (error) {
 			return null;
 		}
@@ -35,7 +35,7 @@ class Helper{
 
 	async userSessionCheck(userId){
 		try {
-			const result = await this.db.query(`SELECT online,email as username FROM ft_appt fa JOIN doctor p ON p.id = fa.hospital_id WHERE fa.id = ?`, [userId]);
+			const result = await this.db.query(`SELECT online,username FROM ft_appt fa JOIN user d ON d.id = fa.hospital_id WHERE fa.id = ?`, [userId]);
 			if(result !== null){
 				return result[0]['username'];
 			}else{
@@ -48,7 +48,7 @@ class Helper{
 
 	async addSocketId(userId, userSocketId){
 		try {
-			return await this.db.query(`UPDATE doctor SET socketid = ?, online= ? WHERE id = ?`, [userSocketId,'Y',userId]);
+			return await this.db.query(`UPDATE user SET socketid = ?, online= ? WHERE id = ?`, [userSocketId,'2',userId]);
 		} catch (error) {
 			console.log(error);
 			return null;
@@ -57,21 +57,21 @@ class Helper{
 
 	async isUserLoggedOut(userSocketId){
 		try {
-			return await this.db.query(`SELECT online FROM doctor WHERE socketid = ?`, [userSocketId]);
+			return await this.db.query(`SELECT online FROM user WHERE socketid = ?`, [userSocketId]);
 		} catch (error) {
 			return null;
 		}
 	}
 
 	async logoutUser(userSocketId){
-		return await this.db.query(`UPDATE doctor SET socketid = ?, online= ? WHERE socketid = ?`, ['','N',userSocketId]);
+		return await this.db.query(`UPDATE user SET socketid = ?, online= ? WHERE socketid = ?`, ['','1',userSocketId]);
 	}
 
-	getChatList(userId, userSocketId){
+	getChatList(params){
 		try {
 			return Promise.all([
-				this.db.query(`SELECT id,email as username, last_name, first_name FROM doctor WHERE id = ?`, [userId]),
-				this.db.query(`SELECT p.id,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['Y',userId])
+				this.db.query(`SELECT id,email, username, name FROM user WHERE id = ?`, [params.uid]),
+				this.db.query(`SELECT p.id,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',params.hid])
 			]).then( (response) => {
 				return {
 					userinfo : response[0].length > 0 ? response[0][0] : response[0],
@@ -86,15 +86,13 @@ class Helper{
 			return null;
 		}
 	}
-	getChatListPHP(userId){
+	getChatListPHP(hid){
 		try {
 			return Promise.all([
-				this.db.query(`SELECT id,email as username, last_name, first_name FROM doctor WHERE id = ?`, [userId]),
-				this.db.query(`SELECT p.id,email as username, date, last_name, first_name,fa.id as appt_id FROM patient p JOIN ft_appt fa ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['Y',userId])
+				this.db.query(`SELECT p.id,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',hid])
 			]).then( (response) => {
 				return {
-					userinfo : response[0].length > 0 ? response[0][0] : response[0],
-					chatlist : response[1]
+					user : response[0].length > 0 ? response[0][0] : response[0]
 				};
 			}).catch( (error) => {
 				console.warn(error);
@@ -109,7 +107,7 @@ class Helper{
 		try {
 			return await this.db.query(
 				"INSERT INTO ft_chat (`user_id`,`patient_id`,`content`,`sender`,`appt_id`) values (?,?,?,?,?)",
-				[params.fromUserId, params.toUserId, params.message,'doctor',params.apptId]
+				[params.fromUserId, params.toUserId, params.message,'ft_er',params.apptId]
 			);
 		} catch (error) {
 			console.warn(error);

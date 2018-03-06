@@ -5,7 +5,7 @@
 
 'user strict';
 
-app.controller('authController', function ($scope, $location, $timeout, appService) {
+app.controller('authController', function ($scope,$routeParams, $location, $timeout, appService) {
 
     $scope.data = {
         regUsername : '',
@@ -74,7 +74,7 @@ app.controller('authController', function ($scope, $location, $timeout, appServi
             }
         })
         .then((response) => {
-            $location.path(`/home/${response.userId}`);
+            $location.path(`/home/${response.userId}&${response.hid}`);
             $scope.$apply();
         })
         .catch((error) => {

@@ -20,21 +20,21 @@ class Socket{
         this.io.on('connection', (socket) => {
             socket.on('chat-list-php', async (u) => {
                 let chatListResponse = {};
-                const chat_connect = u.connected;
-                const result = await helper.getChatListPHP(u.userId);
+                const result = await helper.getChatListPHP(u.hid);
+                const conn = u.connected;
                 socket.broadcast.emit('test-php', {
                     error: result !== null ? false : true,
-                    connected: chat_connect,
-                    user: result.userinfo
+                    connected: conn,
+                    user: result.user
                 });
             });
             /**
             * get the user's Chat chlist
             */
-            socket.on('chat-list', async (userId) => {
+            socket.on('chat-list', async (params) => {
 
                let chatListResponse = {};
-
+               const userId = params.uid;
                 if (userId === '' && (typeof userId !== 'string' || typeof userId !== 'number')) {
 
                     chatListResponse.error = true;
@@ -42,7 +42,7 @@ class Socket{
                     
                     this.io.emit('chat-list-response',chatListResponse);
                 }else{
-                    const result = await helper.getChatList(userId, socket.id);
+                    const result = await helper.getChatList(params);
                     this.io.to(socket.id).emit('chat-list-response', {
                         error: result !== null ? false : true,
                         singleUser: false,

@@ -7,8 +7,9 @@
 
 app.controller('homeController', function ($scope, $routeParams, $location, appService){
     
-    const UserId = $routeParams.userId;
-
+    const rp = $routeParams.userId.split('&');
+    const hid = rp[1];
+    const UserId = rp[0];
     $scope.data = {
         username: '',
         chatlist: [],
@@ -17,13 +18,14 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
         messages: []
     };
     console.log(UserId);
-    console.log($routeParams);
+    console.log(hid);
     appService.connectSocketServer(UserId);
-
-
-    appService.socketEmit(`chat-list`, UserId);
+    const params= {hid:hid,uid:UserId};
+    console.log(params);
+    appService.socketEmit(`chat-list`, params);
     appService.socketOn('test-php', (response) => {
         $scope.$apply( () =>{
+            console.log(response);
             if (!response.error) {
                 console.log(response);
                 if (response.connected == true) {
@@ -121,8 +123,6 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
         $scope.data.selectedFriendName = friendData[0]['username'];
         $scope.data.selectedFriendId = friendId;
         $scope.data.selectedApptId = apptId;
-        console.log(apptId);
-        console.log($scope.data);
         /**
         * This HTTP call will fetch chat between two users
         */

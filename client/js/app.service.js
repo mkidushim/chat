@@ -41,14 +41,15 @@ class AppService{
         });
     }
     
-    getMessages(userId, friendId,apptId) {
+    getMessages(userId, friendId,apptId,hid) {
         return new Promise((resolve, reject) => {
             this.httpCall({
                 url: '/getMessages',
                 params: {
                     'userId': userId,
                     'toUserId': friendId,
-                    'apptId': apptId
+                    'apptId': apptId,
+                    'hospitalId': hid
                 }
             }).then((response) => {
                 resolve(response);
