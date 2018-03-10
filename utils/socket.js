@@ -20,13 +20,21 @@ class Socket{
         this.io.on('connection', (socket) => {
             socket.on('chat-list-php', async (u) => {
                 let chatListResponse = {};
-                const result = await helper.getChatListPHP(u.hid);
-                const conn = u.connected;
-                socket.broadcast.emit('test-php', {
-                    error: result !== null ? false : true,
-                    connected: conn,
-                    user: result.user
-                });
+                if(u.connected !== false){
+                    const result = await helper.getChatListPHP(u.hid);
+                    if(result.user != ''){
+                        result.user.img = 'https://mike.fusionofideas.com/mtmapi/files/users/'+result.user.img; 
+                    }
+                    const conn = u.connected;
+                    socket.broadcast.emit('test-php', {
+                        error: result !== null ? false : true,
+                        connected: conn,
+                        user: result.user
+                    });
+                }else{
+                    socket.broadcast.emit('test-php', u);
+                }
+
             });
             /**
             * get the user's Chat chlist
@@ -43,16 +51,22 @@ class Socket{
                     this.io.emit('chat-list-response',chatListResponse);
                 }else{
                     const result = await helper.getChatList(params);
+                    for(var i = 0; i<result.chatlist.length; i++){
+                        if(result.chatlist[i].img != ''){
+                            result.chatlist[i].img = 'https://mike.fusionofideas.com/mtmapi/files/users/'+result.chatlist[i].img; 
+                        }
+                    }
                     this.io.to(socket.id).emit('chat-list-response', {
                         error: result !== null ? false : true,
                         singleUser: false,
                         chatList: result.chatlist
                     });
-                    socket.broadcast.emit('chat-list-response', {
-                        error: result !== null ? false : true,
-                        singleUser: true,
-                        chatList: result.userinfo
-                    });
+
+                    // socket.broadcast.emit('chat-list-response', {
+                    //     error: result !== null ? false : true,
+                    //     singleUser: true,
+                    //     chatList: result.userinfo
+                    // });
                 }
             });
             /**
@@ -74,14 +88,9 @@ class Socket{
 
                 }else{                    
                     let toSocketId = data.toSocketId;
-                    const sqlResult = await helper.insertMessages({
-                        fromUserId: data.fromUserId,
-                        toUserId: data.toUserId,
-                        apptId: data.apptId,
-                        message: data.message,
-                        sender:'doctor'
-                    });
-                    this.io.to(toSocketId).emit(`add-message-response`, data); 
+                    data.sender = 'ft_er';
+                    const sqlResult = await helper.insertMessages(data);
+                    this.io.to(socket.id).emit(`add-message-response`, data); 
                 }               
             });
             socket.on('add-message-php', async (data) => {
@@ -107,16 +116,16 @@ class Socket{
             */
             socket.on('disconnect',async ()=>{
                 const isLoggedOut = await helper.logoutUser(socket.id);
-                setTimeout(async ()=>{
-                    const isLoggedOut = await helper.isUserLoggedOut(socket.id);
-                    if (isLoggedOut && isLoggedOut !== null) {
-                        socket.broadcast.emit('chat-list-response', {
-                            error: false,
-                            userDisconnected: true,
-                            socketId: socket.id
-                        });
-                    }
-                },1000);
+                // setTimeout(async ()=>{
+                //     const isLoggedOut = await helper.isUserLoggedOut(socket.id);
+                //     if (isLoggedOut && isLoggedOut !== null) {
+                //         socket.broadcast.emit('chat-list-response', {
+                //             error: false,
+                //             userDisconnected: true,
+                //             socketId: socket.id
+                //         });
+                //     }
+                // },1000);
             });
 
         });
@@ -128,6 +137,8 @@ class Socket{
         this.io.use( async (socket, next) => {
             let userId = socket.request._query['userId'];
             let userSocketId = socket.id;          
+            console.log(userSocketId);
+            console.log(userId);
             const response = await helper.addSocketId( userId, userSocketId);
             if(response &&  response !== null){
                 next();

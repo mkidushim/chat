@@ -71,7 +71,7 @@ class Helper{
 		try {
 			return Promise.all([
 				this.db.query(`SELECT id,email, username, name FROM user WHERE id = ?`, [params.uid]),
-				this.db.query(`SELECT p.id,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',params.hid])
+				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',params.hid])
 			]).then( (response) => {
 				return {
 					userinfo : response[0].length > 0 ? response[0][0] : response[0],
@@ -89,7 +89,7 @@ class Helper{
 	getChatListPHP(hid){
 		try {
 			return Promise.all([
-				this.db.query(`SELECT p.id,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',hid])
+				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',hid])
 			]).then( (response) => {
 				return {
 					user : response[0].length > 0 ? response[0][0] : response[0]
@@ -103,6 +103,7 @@ class Helper{
 			return null;
 		}
 	}
+
 	async insertMessages(params){
 		try {
 			return await this.db.query(
@@ -114,7 +115,7 @@ class Helper{
 			return null;
 		}		
 	}
-
+	//ajax
 	async getMessages(userId, toUserId, aid){
 		try {
 			return await this.db.query(

@@ -115,6 +115,7 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
         /*
         * Highlighting the selected user from the chat list
         */
+        //split in two functions row click to direct you to new chat/patient page
         const friendId = friend.id;
         const apptId = friend.appt_id;
         const friendData = $scope.data.chatlist.filter((obj) => {
@@ -157,8 +158,6 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
             
             /* Emmiting socket event to server with Message, starts */
             if (friendData.length > 0) {
-                console.log(selectedApptId);
-                console.log(friendData);
                 toUserId = friendData[0]['id'];         
                 let messagePacket = {
                     message: document.querySelector('#message').value,
@@ -169,7 +168,6 @@ app.controller('homeController', function ($scope, $routeParams, $location, appS
                 $scope.data.messages.push(messagePacket);
                 appService.socketEmit(`add-message`, messagePacket);
                 appService.scrollToBottom();
-                console.log('clear message');
                 setTimeout(function() {
                     document.querySelector('#message').value = '';
                 }, 200);
