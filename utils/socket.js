@@ -24,6 +24,8 @@ class Socket{
                     const result = await helper.getChatListPHP(u.hid);
                     if(result.user != ''){
                         result.user.img = 'https://mike.fusionofideas.com/mtmapi/files/users/'+result.user.img; 
+                    }else {
+                        result.user.img = 'assets/img/user_no_profileimage@2x.png';
                     }
                     const conn = u.connected;
                     socket.broadcast.emit('test-php', {
@@ -54,11 +56,13 @@ class Socket{
                     for(var i = 0; i<result.chatlist.length; i++){
                         if(result.chatlist[i].img != ''){
                             result.chatlist[i].img = 'https://mike.fusionofideas.com/mtmapi/files/users/'+result.chatlist[i].img; 
+                        }else {
+                            result.chatlist[i].img = 'assets/img/user_no_profileimage@2x.png';
                         }
                     }
                     this.io.to(socket.id).emit('chat-list-response', {
                         error: result !== null ? false : true,
-                        singleUser: false,
+                        pending: true,
                         chatList: result.chatlist
                     });
 
@@ -67,6 +71,28 @@ class Socket{
                     //     singleUser: true,
                     //     chatList: result.userinfo
                     // });
+                }
+            });
+            //update chat list status
+             socket.on('chat-list-status', async (params) => {
+
+               let chatListResponse = {};
+               const appt_id = params.appt_id;
+               const user_id = params.user_id;
+               const status = params.status;
+                if (appt_id === '' && (typeof appt_id !== 'string' || typeof appt_id !== 'number')) {
+
+                    chatListResponse.error = true;
+                    chatListResponse.message = `appt_id does not exits.`;
+                    
+                    this.io.emit('chat-list-response',chatListResponse);
+                }else{
+                    const result = await helper.updateApptStatus(status,user_id,appt_id);
+
+                    socket.broadcast.emit('chat-list-update', {
+                        error: result !== null ? false : true,
+                        user: params
+                    });
                 }
             });
             /**

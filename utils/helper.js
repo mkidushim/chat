@@ -71,7 +71,7 @@ class Helper{
 		try {
 			return Promise.all([
 				this.db.query(`SELECT id,email, username, name FROM user WHERE id = ?`, [params.uid]),
-				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',params.hid])
+				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id,status,user_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ? ORDER BY id`, ['2',params.hid]),
 			]).then( (response) => {
 				return {
 					userinfo : response[0].length > 0 ? response[0][0] : response[0],
@@ -89,7 +89,24 @@ class Helper{
 	getChatListPHP(hid){
 		try {
 			return Promise.all([
-				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',hid])
+				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id,status FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ?`, ['2',hid])
+			]).then( (response) => {
+				return {
+					user : response[0].length > 0 ? response[0][0] : response[0]
+				};
+			}).catch( (error) => {
+				console.warn(error);
+				return (null);
+			});
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+	async updateApptStatus(status,user_id,appt_id){
+		try {
+			return Promise.all([
+				this.db.query(`UPDATE ft_appt SET status=?,user_id=? WHERE id = ?`, [status,user_id,appt_id])
 			]).then( (response) => {
 				return {
 					user : response[0].length > 0 ? response[0][0] : response[0]
@@ -114,21 +131,6 @@ class Helper{
 			console.warn(error);
 			return null;
 		}		
-	}
-	//ajax
-	async getMessages(userId, toUserId, aid){
-		try {
-			return await this.db.query(
-				`SELECT id,user_id as fromUserId,patient_id as toUserId,content as message,sender FROM ft_chat WHERE 
-					user_id = ? AND patient_id = ? AND appt_id = ? 
-					ORDER BY id ASC				
-				`,
-				[userId, toUserId, aid]
-			);
-		} catch (error) {
-			console.warn(error);
-			return null;
-		}
 	}
 }
 module.exports = new Helper();
