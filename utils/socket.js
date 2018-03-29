@@ -7,6 +7,7 @@
 const path = require('path');
 var MySQLEvents = require('mysql-events');
 const helper = require('./helper');
+var moment = require('moment'); 
 
 
 class Socket{
@@ -52,7 +53,18 @@ class Socket{
                     
                     this.io.emit('chat-list-response',chatListResponse);
                 }else{
-                    const result = await helper.getChatList(params);
+                    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+                    var exp = moment().add(12,'hours').valueOf();
+                    exp = moment(exp).format('YYYY-MM-DD HH:mm:ss');
+                    params.exp_d = exp;
+                    params.now = now;
+                    // getChatList gets only patients assigned to that user
+                    //getChatListAdmin gets all users regardless of user id
+                    if(params.admin == '1'){
+                        var result = await helper.getChatListAdmin(params);
+                    }else{
+                        var result = await helper.getChatList(params);
+                    }
                     for(var i = 0; i<result.chatlist.length; i++){
                         if(result.chatlist[i].img != ''){
                             result.chatlist[i].img = 'https://mike.fusionofideas.com/mtmapi/files/users/'+result.chatlist[i].img; 
@@ -60,11 +72,19 @@ class Socket{
                             result.chatlist[i].img = 'assets/img/user_no_profileimage@2x.png';
                         }
                     }
-                    this.io.to(socket.id).emit('chat-list-response', {
-                        error: result !== null ? false : true,
-                        pending: true,
-                        chatList: result.chatlist
-                    });
+                    if(result.auth.length == 0){
+                        this.io.to(socket.id).emit('chat-list-response', {
+                            error: true,
+                            auth: true,
+                            chatList: result.chatlist
+                        });
+                    }else{
+                        this.io.to(socket.id).emit('chat-list-response', {
+                            error: result !== null ? false : true,
+                            auth: false,
+                            chatList: result.chatlist
+                        });
+                    }
 
                     // socket.broadcast.emit('chat-list-response', {
                     //     error: result !== null ? false : true,
@@ -80,6 +100,12 @@ class Socket{
                const appt_id = params.appt_id;
                const user_id = params.user_id;
                const status = params.status;
+               const now = moment().format('YYYY-MM-DD HH:mm:ss');
+                var exp = moment().add(12,'hours').valueOf();
+                const exp_d = moment(exp).format('YYYY-MM-DD HH:mm:ss');
+                const tremove = await helper.tokenRemove(now);
+                const auth = await helper.userAuth(params.user,params.token);
+                const tupdate = await helper.tokenUpdate(exp_d,params.user,params.token);
                 if (appt_id === '' && (typeof appt_id !== 'string' || typeof appt_id !== 'number')) {
 
                     chatListResponse.error = true;
@@ -87,12 +113,19 @@ class Socket{
                     
                     this.io.emit('chat-list-response',chatListResponse);
                 }else{
-                    const result = await helper.updateApptStatus(status,user_id,appt_id);
-
-                    socket.broadcast.emit('chat-list-update', {
-                        error: result !== null ? false : true,
-                        user: params
-                    });
+                    if(auth.length == 0){
+                        this.io.to(socket.id).emit('chat-list-update', {
+                            error: true,
+                            auth: true
+                        });    
+                    }else{
+                        const result = await helper.updateApptStatus(status,user_id,appt_id,params.user,params.token,now,exp_d);
+                        this.io.broadcast.emit('chat-list-update', {
+                            error: result !== null ? false : true,
+                            user: params,
+                            auth: false
+                        });
+                    }
                 }
             });
             /**
@@ -114,7 +147,17 @@ class Socket{
 
                 }else{                    
                     let toSocketId = data.toSocketId;
+                    const now = moment().format('YYYY-MM-DD HH:mm:ss');
+                    var exp = moment().add(12,'hours').valueOf();
+                    const exp_d = moment(exp).format('YYYY-MM-DD HH:mm:ss');
+                    const tremove = await helper.tokenRemove(now);
+                    const auth = await helper.userAuth(data.user,data.token);
+                    const tupdate = await helper.tokenUpdate(exp_d,data.user,data.token);
                     data.sender = 'ft_er';
+                    data.auth = false;
+                    if(auth.length == 0){
+                        data.auth = true;
+                    }
                     const sqlResult = await helper.insertMessages(data);
                     this.io.to(socket.id).emit(`add-message-response`, data); 
                 }               

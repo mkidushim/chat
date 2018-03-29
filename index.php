@@ -34,11 +34,11 @@
 <script type="text/javascript">
   // var socket = io.connect('https://mike.fusionofideas.com:4000');
   // session_user = "<?php echo $_SESSION['fast_track']['user']; ?>";
-  session_userID = '1';
+  session_userID = '2';
   // session_admin = "<?php echo $_SESSION['fast_track']['admin']; ?>";
   // session_token = "<?php echo $_SESSION['fast_track']['token']; ?>";
-  session_hospital_id = '1';
-  const hid = '1';
+  session_hospital_id = '2';
+  const hid = '2';
   socket = io.connect( 'https://mike.fusionofideas.com:4000',{ query: 'userId='+session_userID });
   var chatlist = [];
   var messages = [];
@@ -55,7 +55,7 @@
   //display chat list response 
   socket.on('chat-list-response', function (response) {
     if (!response.error) {
-      if (response.userDisconnected) {
+      if (response.in_transit) {
         //disconnect user
         chatlist = chatlist.filter(function (obj) {
             return obj.socketid !== response.socketId;
@@ -149,7 +149,9 @@
   }
   //function for loading messages
   function loadMessages(patient_id,appt_id) {
-    var form = preBuild();
+    var form = new FormData();
+    form.append('user', 'mike');
+    form.append('token', '3d73e24d314e7441f92855126ab93cd0');
     form.append('patient_id',patient_id);
     form.append('appt_id',appt_id);
     var promise = getMessages(form);
@@ -178,7 +180,7 @@
         for(var i = 0; i< dc.length; i++){
           html += '<li class="message-item">'+dc[i].message+'</li>';
         }
-        $('#messages').innerHTML = html;
+        $('#messages').html(html);
       }
     });
   }
@@ -198,6 +200,9 @@
     */
     //get chat messages between user and patient
     loadMessages(friendId,apptId);
+  }
+  function updateStatus() {
+    
   }
   //send message from portal to app
   function sendMessage() {

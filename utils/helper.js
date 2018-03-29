@@ -67,15 +67,78 @@ class Helper{
 		return await this.db.query(`UPDATE user SET socketid = ?, online= ? WHERE socketid = ?`, ['','1',userSocketId]);
 	}
 
+
+
+	async tokenRemove(now){
+		try {
+			return await this.db.query(
+				"DELETE FROM `session` WHERE `expiration`<=?",
+				[now]
+			);
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}		
+	}
+	async tokenUpdate(exp,user,token){
+		try {
+			return await this.db.query(
+				"UPDATE `session` SET `expiration` = ? WHERE `token` = ? AND `user` = ? AND `type` = 'portal'",
+				[exp,token,user]
+			);
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}		
+	}
+	async userAuth(user,token){
+		try {
+			return await this.db.query(`SELECT id FROM session WHERE user=? AND token=? AND type = 'portal'`, [user,token]);
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
+	getChatListAdmin(params){
+		try {
+			return Promise.all([
+				this.db.query(`SELECT id,email, username, name FROM user WHERE id = ?`, [params.uid]),
+				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id,status,user_id,eta FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ? ORDER BY id`, ['2',params.hid]),
+				this.db.query(`DELETE FROM session WHERE expiration<=?`, [params.now]),
+				this.db.query(`SELECT id FROM session WHERE user=? AND token=? AND type = 'portal'`, [params.user,params.token]),
+				this.db.query(`UPDATE session SET expiration = ? WHERE user = ? AND token = ? AND type = 'portal'`, [params.exp_d,params.user,params.token]),
+			]).then( (response) => {
+				return {
+					userinfo : response[0].length > 0 ? response[0][0] : response[0],
+					chatlist : response[1],
+					deleteAuth : response[2],
+					auth : response[3],
+					updateAuth : response[4]
+				};
+			}).catch( (error) => {
+				console.warn(error);
+				return (null);
+			});
+		} catch (error) {
+			console.warn(error);
+			return null;
+		}
+	}
 	getChatList(params){
 		try {
 			return Promise.all([
 				this.db.query(`SELECT id,email, username, name FROM user WHERE id = ?`, [params.uid]),
-				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id,status,user_id FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ? ORDER BY id`, ['2',params.hid]),
+				this.db.query(`SELECT p.id,img,email as username, date, last_name, first_name,fa.id as appt_id,status,user_id,eta FROM ft_appt fa JOIN patient p ON p.id = fa.patient_id WHERE fa.online = ? AND hospital_id = ? AND (user_id=? OR user_id = '0') ORDER BY id`, ['2',params.hid,params.uid]),
+				this.db.query(`DELETE FROM session WHERE expiration<=?`, [params.now]),
+				this.db.query(`SELECT id FROM session WHERE user=? AND token=? AND type = 'portal'`, [params.user,params.token]),
+				this.db.query(`UPDATE session SET expiration = ? WHERE user = ? AND token = ? AND type = 'portal'`, [params.exp_d,params.user,params.token]),
 			]).then( (response) => {
 				return {
 					userinfo : response[0].length > 0 ? response[0][0] : response[0],
-					chatlist : response[1]
+					chatlist : response[1],
+					deleteAuth : response[2],
+					auth : response[3],
+					updateAuth : response[4]
 				};
 			}).catch( (error) => {
 				console.warn(error);
@@ -103,13 +166,13 @@ class Helper{
 			return null;
 		}
 	}
-	async updateApptStatus(status,user_id,appt_id){
+	async updateApptStatus(status,user_id,appt_id,user,token,now,exp_d){
 		try {
 			return Promise.all([
-				this.db.query(`UPDATE ft_appt SET status=?,user_id=? WHERE id = ?`, [status,user_id,appt_id])
+				this.db.query(`UPDATE ft_appt SET status=?,user_id=? WHERE id = ?`, [status,user_id,appt_id]),
 			]).then( (response) => {
 				return {
-					user : response[0].length > 0 ? response[0][0] : response[0]
+					user : response[0].length > 0 ? response[0][0] : response[0],
 				};
 			}).catch( (error) => {
 				console.warn(error);
