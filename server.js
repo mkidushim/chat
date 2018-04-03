@@ -23,7 +23,7 @@ class Server{
 
     constructor(){
         this.port =  process.env.PORT || 4000;
-        this.host = `mike.fusionofideas.com`;
+        this.host = `api.fusionofideas.com`;
         
         this.app = express();
         this.https = https.Server(options,this.app);

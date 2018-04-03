@@ -1,5 +1,5 @@
 {
-	"name": "private-chat-app-using-nodejs-and-socket.io",
+	"name": "ft-chat",
 	"version": "1.0.0",
 	"description": "This is a private chat application for My Travel Medics Fast Track ER",
 	"main": "server.js",
