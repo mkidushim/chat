@@ -1,7 +1,8 @@
+#! /usr/bin/env node
+
 /**
-* Real Time chatting app
-* @author Shashank Tiwari
-*/
+* My Travel Medic Fast Track Chat
+**/
 'use strict';
 
 const express = require("express");
@@ -19,11 +20,13 @@ const options = {
     key: fs.readFileSync('/etc/apache2/ssl/fusionofideas.key'),
     cert: fs.readFileSync('/etc/apache2/ssl/fusionofideas.crt')
 };
+//server config
+var app_config = require('./app_config.js');
 class Server{
 
     constructor(){
-        this.port =  process.env.PORT || 4000;
-        this.host = `api.fusionofideas.com`;
+        this.port = app_config.app.port;
+        this.host = app_config.app.host;
         
         this.app = express();
         this.https = https.Server(options,this.app);
