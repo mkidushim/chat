@@ -1,25 +1,9 @@
-/**
-* Real Time chatting app
-* @author Shashank Tiwari
-*/
-
-/**
-* Source code by https://codeburst.io/@MichalMecinski
-* https://codeburst.io/node-js-mysql-and-promises-4c3be599909b
-*/
-
 const mysql = require('mysql');
+const app_config = require('../app_config.js');
 
 class Db {
 	constructor(config) {
-		this.connection = mysql.createPool({
-			host: 'localhost',
-			user: 'root',
-			password: 'Monster.',
-			database: 'mtm',
-			// socketPath:'/Applications/MAMP/tmp/mysql/mysql.sock',
-			debug: true
-		});
+		this.connection = mysql.createPool(app_config.db);
 	}
 	query(sql, args) {
 		return new Promise((resolve, reject) => {

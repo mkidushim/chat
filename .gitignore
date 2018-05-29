@@ -1,8 +1,10 @@
-<<<<<<< HEAD
 # See http://help.github.com/ignore-files/ for more about ignoring files.
+#config
+app_config.js
 
 # dependencies
 /node_modules
+
 
 # IDEs and editors
 /.idea
@@ -19,7 +21,6 @@
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-=======
 # Logs
 logs
 *.log
@@ -78,5 +79,3 @@ typings/
 
 # dotenv environment variables file
 .env
-
->>>>>>> 2f57339a7bda8575156e0ca997a5615a7519029f
