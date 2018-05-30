@@ -1,1 +1,0 @@
-var baseURL = 'https://mike.fusionofideas.com/mtmapi/admin/';
