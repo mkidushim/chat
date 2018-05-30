@@ -3,7 +3,7 @@ const app_config = {
  app: {
   port: process.env.PORT || 4400,
   // host: `127.0.0.1`,
-  host: process.env.HOST || `fast-track-chat-dev.us-west-1.elasticbeanstalk.com`,
+  host: `fast-track-chat-dev.us-west-1.elasticbeanstalk.com`,
  },
  db: {
   host: '192.168.1.166',
