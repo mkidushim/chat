@@ -1,7 +1,7 @@
 // config.js
 const app_config = {
  app: {
-  port: 4400,
+  port: 80,
   // host: `127.0.0.1`,
   host: `fast-track-chat-dev.us-west-1.elasticbeanstalk.com`,
  },
