@@ -1,0 +1,18 @@
+branch-defaults:
+  mike-ft:
+    environment: null
+    group_suffix: null
+global:
+  application_name: fast_track_chat
+  branch: master
+  default_ec2_keyname: aws-eb
+  default_platform: Node.js
+  default_region: us-west-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  repository: origin
+  sc: git
+  workspace_type: Application
