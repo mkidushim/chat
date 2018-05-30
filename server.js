@@ -52,7 +52,7 @@ class Server{
         this.appConfig();
         this.includeRoutes();
 
-        this.http.listen(process.env.PORT || this.port, this.host, () => {
+        this.http.listen(process.env.PORT || this.port, process.env.PORT || this.host, () => {
             console.log(`Listening on http://${this.host}:${this.port}`);
         });
     }
