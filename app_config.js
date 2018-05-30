@@ -2,10 +2,11 @@
 const app_config = {
  app: {
   port: 4400,
-  host: `fasttrackchat-env.jmxxwfx2em.us-west-2.elasticbeanstalk.com`,
+  host: `127.0.0.1`,
+  // host: `fast-track-chat-dev.us-west-1.elasticbeanstalk.com/`,
  },
  db: {
-  host: 'localhost',
+  host: '192.168.1.166',
   user: 'root',
   password: 'Monster.',
   database: 'mtm',
