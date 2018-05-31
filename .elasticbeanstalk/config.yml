@@ -2,6 +2,13 @@ branch-defaults:
   mike-eb:
     environment: fast-track
     group_suffix: null
+    container_commands:
+      enable_websockets:
+        command: |
+          sed -i '/\s*proxy_set_header\s*Connection/c \
+                  proxy_set_header Upgrade $http_upgrade;\
+                  proxy_set_header Connection "upgrade";\
+                  ' /tmp/deployment/config/#etc#nginx#conf.d#00_elastic_beanstalk_proxy.conf
   mike-ft:
     environment: null
     group_suffix: null
