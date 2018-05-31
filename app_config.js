@@ -9,7 +9,7 @@ const app_config = {
   host: '192.168.1.166',
   user: 'root',
   password: 'Monster.',
-  database: 'mtm',
+  database: 'mtm_dev',
   debug: true
  },
  cert: __dirname+'/files/pat_cert.pem',
