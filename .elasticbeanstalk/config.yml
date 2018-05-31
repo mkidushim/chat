@@ -1,3 +1,10 @@
+branch-defaults:
+  mike-eb:
+    environment: mtm-dev
+    group_suffix: null
+  mike-ft:
+    environment: null
+    group_suffix: null
 global:
   application_name: fast_track_chat
   branch: null
