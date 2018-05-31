@@ -1,9 +1,15 @@
 branch-defaults:
   mike-eb:
-    environment: fast-track-chat-dev
+    environment: fast-track
+    group_suffix: null
   mike-ft:
     environment: null
     group_suffix: null
+container_commands:
+  enable_websockets:
+    command: "sed -i '/\\s*proxy_set_header\\s*Connection/c \\\n         proxy_set_header\
+      \ Upgrade $http_upgrade;\\\n         proxy_set_header Connection \"upgrade\"\
+      ;\\\n ' /tmp/deployment/config/#etc#nginx#conf.d#00_elastic_beanstalk_proxy.conf"
 global:
   application_name: fast_track_chat
   branch: null
@@ -18,10 +24,3 @@ global:
   repository: null
   sc: git
   workspace_type: Application
-container_commands:
-  enable_websockets:
-    command: |
-     sed -i '/\s*proxy_set_header\s*Connection/c \
-              proxy_set_header Upgrade $http_upgrade;\
-              proxy_set_header Connection "upgrade";\
-      ' /tmp/deployment/config/#etc#nginx#conf.d#00_elastic_beanstalk_proxy.conf
