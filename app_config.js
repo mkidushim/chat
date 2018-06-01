@@ -6,7 +6,7 @@ const app_config = {
   // host: `fast-track-chat-dev.us-west-1.elasticbeanstalk.com`,
  },
  db: {
-  acquireTimeout: 60 * 60 * 1000,
+  acquireTimeout: 100000,
   host: 'mtm.cc0mfnozno0u.us-west-1.rds.amazonaws.com',
   user: 'fusion',
   password: 'Foidtt75',
