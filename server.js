@@ -43,7 +43,7 @@ class Server{
 
     /* Including app Routes starts*/
     includeRoutes(){
-        // new routes(this.app).routesConfig();
+        new routes(this.app).routesConfig();
         new socketEvents(this.socket).socketConfig();
     }
     /* Including app Routes ends*/  
