@@ -14,7 +14,6 @@ const app_config = {
   user: 'fusion',
   password: 'Foidtt75',
   database: 'mtm_dev',
-  debug: true
  },
  cert: __dirname+'/files/pat_cert.pem',
  cert_pass: 'zdfjfkweighkxljadfewgergjkdgxl',
