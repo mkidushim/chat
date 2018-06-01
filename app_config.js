@@ -6,7 +6,7 @@ const app_config = {
   // host: `fast-track-chat-dev.us-west-1.elasticbeanstalk.com`,
  },
  db: {
-  host: 'mtm.cc0mfnozno0u.us-west-1.rds.amazonaws.com:3306',
+  host: 'mtm.cc0mfnozno0u.us-west-1.rds.amazonaws.com',
   user: 'fusion',
   password: 'Foidtt75',
   database: 'mtm_dev',
