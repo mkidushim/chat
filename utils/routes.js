@@ -17,7 +17,7 @@ class Routes{
 	
 	appRoutes(){
 		this.app.get('*',(request,response) =>{
-			response.sendFile(path.join(__dirname + 'index.html'));
+			response.sendFile(path.join(__dirname + '/../index.html'));
 			/*
 			* OR one can define the template engine and use response.render();
 			*/
