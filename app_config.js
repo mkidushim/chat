@@ -15,7 +15,7 @@ const app_config = {
  cert: __dirname+'/files/pat_cert.pem',
  cert_pass: 'zdfjfkweighkxljadfewgergjkdgxl',
  cert_topic:'com.foi5.enterprise.MyTravelMedic',
- fileDir: 'https://mtm-dev.fusionofideas.com/api/files/users/',
+ fileDir: 'https://mtmd.fusionofideas.com/api/files/users/',
  placeholderURL: 'assets/img/user_no_profileimage@2x.png',
  cert_prod:true
 };
